@@ -21,6 +21,8 @@ public class Menu implements CommandLineRunner {
     private static final String MENU = """
             *** Screen Sound Music ***
             
+            Digite a opção desejada:
+            
             1 - Cadastrar artistas
             2 - Cadastrar músicas
             3 - Listar músicas
@@ -29,8 +31,7 @@ public class Menu implements CommandLineRunner {
             
             0 - Sair
             
-            Digite a opção desejada:
-            """;
+            >>>\s""";
 
     @Override
     public void run(String @NonNull ... args) throws Exception {
@@ -41,40 +42,59 @@ public class Menu implements CommandLineRunner {
         var option = -1;
 
         while (option != 0) {
-            System.out.println(MENU);
+            System.out.print(MENU);
             option = Integer.parseInt(SCANNER.nextLine());
 
             switch (option) {
                 case 1 -> registerArtist();
                 case 0 -> exitApplication();
-                default -> System.out.println("Opção inválida");
+                default -> System.out.println("Opção inválida!");
             }
         }
     }
 
     private void registerArtist() {
-        System.out.print("Digite o nome do artista: ");
+        System.out.print("\nDigite o nome do artista: ");
         var name = SCANNER.nextLine();
 
         System.out.print("""
-                Selecione o tipo:
+                \nDigite o tipo do artista:
+                
                 1 - Solo
                 2 - Dupla
                 3 - Banda
-                """);
-        var type = Integer.parseInt(SCANNER.nextLine());
+                
+                >>>\s""");
 
+        try {
+            var type = Integer.parseInt(SCANNER.nextLine());
+
+            if (name.isBlank() || type > 3 || type < 1) {
+                System.out.println("\nInformações inválidas!\n");
+
+                return;
+            }
+
+            Artist artist = artistRepository.save(buildArtist(name, type));
+
+            if (artist.getId() != null) {
+                System.out.println("\nArtista cadastrado com sucesso!\n");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("\nTipo inválido, por favor digite um número entre 1 e 3.\n");
+        }
+    }
+
+    private Artist buildArtist(String name, int type) {
         ArtistType artistType = ArtistType.values()[type - 1];
 
-        Artist artist = Artist.builder()
+        return Artist.builder()
                 .name(name)
                 .type(artistType)
                 .build();
-
-        artistRepository.save(artist);
     }
 
     private void exitApplication() {
-        System.out.println("Encerrando a aplicação...");
+        System.out.println("Encerrando a aplicação...\n");
     }
 }
