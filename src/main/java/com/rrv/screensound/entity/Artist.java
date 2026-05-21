@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "artist")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,7 +19,10 @@ public class Artist {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private ArtistType type;
 
     @OneToMany(mappedBy = "artist")
