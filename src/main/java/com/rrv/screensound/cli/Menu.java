@@ -1,9 +1,10 @@
 package com.rrv.screensound.cli;
 
 import com.rrv.screensound.entity.Artist;
-import com.rrv.screensound.enums.ArtistType;
-import com.rrv.screensound.repository.ArtistRepository;
+import com.rrv.screensound.entity.Song;
 import com.rrv.screensound.service.ArtistService;
+import com.rrv.screensound.service.SongService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.boot.CommandLineRunner;
@@ -15,7 +16,7 @@ import java.util.Scanner;
 @RequiredArgsConstructor
 public class Menu implements CommandLineRunner {
     private final ArtistService artistService;
-    private final ArtistRepository artistRepository;
+    private final SongService songService;
 
     private static final Scanner SCANNER = new Scanner(System.in);
     private static final String MENU = """
@@ -46,14 +47,15 @@ public class Menu implements CommandLineRunner {
             option = Integer.parseInt(SCANNER.nextLine());
 
             switch (option) {
-                case 1 -> registerArtist();
-                case 0 -> exitApplication();
+                case 1 -> collectArtistData();
+                case 2 -> collectSongData();
+                case 0 -> System.out.println("Encerrando a aplicação...\n");
                 default -> System.out.println("Opção inválida!");
             }
         }
     }
 
-    private void registerArtist() {
+    private void collectArtistData() {
         System.out.print("\nDigite o nome do artista: ");
         var name = SCANNER.nextLine();
 
@@ -75,26 +77,37 @@ public class Menu implements CommandLineRunner {
                 return;
             }
 
-            Artist artist = artistRepository.save(buildArtist(name, type));
+            Artist artist = artistService.registerArtist(name, type);
 
             if (artist.getId() != null) {
-                System.out.println("\nArtista cadastrado com sucesso!\n");
+                System.out.println("\nArtista cadastrado com sucesso!");
             }
         } catch (NumberFormatException e) {
             System.out.println("\nTipo inválido, por favor digite um número entre 1 e 3.\n");
         }
     }
 
-    private Artist buildArtist(String name, int type) {
-        ArtistType artistType = ArtistType.values()[type - 1];
+    private void collectSongData() {
+        System.out.print("Digite o nome da música: ");
+        var name = SCANNER.nextLine();
 
-        return Artist.builder()
-                .name(name)
-                .type(artistType)
-                .build();
-    }
+        System.out.print("Digite o nome completo do artista desta música: ");
+        var nameArtist = SCANNER.nextLine();
 
-    private void exitApplication() {
-        System.out.println("Encerrando a aplicação...\n");
+        if (name.isBlank() || nameArtist.isBlank()) {
+            System.out.println("\nInformações inválidas!\n");
+
+            return;
+        }
+
+        try {
+            Song song = songService.registerSong(name, nameArtist);
+
+            if (song.getId() != null) {
+                System.out.println("\nMúsica cadastrada com sucesso!\n");
+            }
+        } catch (EntityNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }
