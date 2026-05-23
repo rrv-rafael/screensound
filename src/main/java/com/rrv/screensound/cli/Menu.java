@@ -41,9 +41,9 @@ public class Menu implements CommandLineRunner {
     }
 
     private void showMenu() {
-        var option = -1;
+        int option;
 
-        while (option != 0) {
+        do {
             System.out.print(MENU);
             option = Integer.parseInt(SCANNER.nextLine());
 
@@ -54,39 +54,50 @@ public class Menu implements CommandLineRunner {
                 case 0 -> System.out.println("Encerrando a aplicação...\n");
                 default -> System.out.println("Opção inválida!");
             }
-        }
+        } while (option != 0);
     }
 
     private void collectArtistData() {
-        System.out.print("\nDigite o nome do artista: ");
-        var name = SCANNER.nextLine();
+        String registerAnother = "";
 
-        System.out.print("""
-                \nDigite o tipo do artista:
-                
-                1 - Solo
-                2 - Dupla
-                3 - Banda
-                
-                >>>\s""");
+        do {
+            System.out.print("\nDigite o nome do artista: ");
+            var name = SCANNER.nextLine();
 
-        try {
-            var type = Integer.parseInt(SCANNER.nextLine());
+            System.out.print("""
+                    \nDigite o tipo do artista:
+                    
+                    1 - Solo
+                    2 - Dupla
+                    3 - Banda
+                    
+                    >>>\s""");
 
-            if (name.isBlank() || type > 3 || type < 1) {
-                System.out.println("\nInformações inválidas!\n");
+            try {
+                var type = Integer.parseInt(SCANNER.nextLine());
 
-                return;
+                if (name.isBlank() || type > 3 || type < 1) {
+                    System.out.println("\nInformações inválidas!");
+
+                    System.out.print("\nDeseja tentar novamente? [s/n]: ");
+                    registerAnother = SCANNER.nextLine();
+                } else {
+                    Artist artist = artistService.registerArtist(name, type);
+
+                    if (artist.getId() != null) {
+                        System.out.println("\nArtista cadastrado com sucesso!");
+
+                        System.out.print("\nCadastrar outro artista? [s/n]: ");
+                        registerAnother = SCANNER.nextLine();
+                    }
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("\nTipo inválido, por favor digite um número entre 1 e 3.");
+
+                System.out.print("\nDeseja tentar novamente? [s/n]: ");
+                registerAnother = SCANNER.nextLine();
             }
-
-            Artist artist = artistService.registerArtist(name, type);
-
-            if (artist.getId() != null) {
-                System.out.println("\nArtista cadastrado com sucesso!");
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("\nTipo inválido, por favor digite um número entre 1 e 3.\n");
-        }
+        } while (registerAnother.equalsIgnoreCase("s"));
     }
 
     private void collectSongData() {
