@@ -36,7 +36,7 @@ public class Menu implements CommandLineRunner {
             >>>\s""";
 
     @Override
-    public void run(String @NonNull ... args) throws Exception {
+    public void run(String @NonNull ... args) {
         showMenu();
     }
 
@@ -58,7 +58,7 @@ public class Menu implements CommandLineRunner {
     }
 
     private void collectArtistData() {
-        String registerAnother = "";
+        var registerAnother = "";
 
         do {
             System.out.print("\nDigite o nome do artista: ");
@@ -101,27 +101,40 @@ public class Menu implements CommandLineRunner {
     }
 
     private void collectSongData() {
-        System.out.print("Digite o nome da música: ");
-        var name = SCANNER.nextLine();
+        var registerAnother = "";
 
-        System.out.print("Digite o nome completo do artista desta música: ");
-        var nameArtist = SCANNER.nextLine();
+        do {
+            System.out.print("\nDigite o nome da música: ");
+            var name = SCANNER.nextLine();
 
-        if (name.isBlank() || nameArtist.isBlank()) {
-            System.out.println("\nInformações inválidas!\n");
+            System.out.print("\nDigite o nome completo do artista desta música: ");
+            var nameArtist = SCANNER.nextLine();
 
-            return;
-        }
+            if (name.isBlank() || nameArtist.isBlank()) {
+                System.out.println("\nInformações inválidas!");
 
-        try {
-            Song song = songService.registerSong(name, nameArtist);
+                System.out.print("\nDeseja tentar novamente? [s/n]: ");
+                registerAnother = SCANNER.nextLine();
 
-            if (song.getId() != null) {
-                System.out.println("\nMúsica cadastrada com sucesso!\n");
+                continue;
             }
-        } catch (EntityNotFoundException e) {
-            System.out.println(e.getMessage());
-        }
+
+            try {
+                Song song = songService.registerSong(name, nameArtist);
+
+                if (song.getId() != null) {
+                    System.out.println("\nMúsica cadastrada com sucesso!");
+
+                    System.out.print("\nCadastrar outra música? [s/n]: ");
+                    registerAnother = SCANNER.nextLine();
+                }
+            } catch (EntityNotFoundException e) {
+                System.out.println(e.getMessage());
+
+                System.out.print("\nDeseja cadastar uma música de outro artista? [s/n]: ");
+                registerAnother = SCANNER.nextLine();
+            }
+        } while (registerAnother.equalsIgnoreCase("s"));
     }
 
     private void listAllSongs() {
