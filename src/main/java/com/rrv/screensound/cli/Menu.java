@@ -10,6 +10,7 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Scanner;
 
 @Component
@@ -49,6 +50,7 @@ public class Menu implements CommandLineRunner {
             switch (option) {
                 case 1 -> collectArtistData();
                 case 2 -> collectSongData();
+                case 3 -> listAllSongs();
                 case 0 -> System.out.println("Encerrando a aplicação...\n");
                 default -> System.out.println("Opção inválida!");
             }
@@ -109,5 +111,17 @@ public class Menu implements CommandLineRunner {
         } catch (EntityNotFoundException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    private void listAllSongs() {
+        List<Song> songs = songService.findAllSongs();
+
+        if (songs.isEmpty()) {
+            System.out.println("\nNenhuma música cadastrada.\n");
+
+            return;
+        }
+
+        songs.forEach(s -> System.out.println("Música: " + s.getName() + " - Artista: " + s.getArtist().getName()));
     }
 }

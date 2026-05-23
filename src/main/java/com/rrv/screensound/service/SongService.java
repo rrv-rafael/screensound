@@ -6,6 +6,8 @@ import com.rrv.screensound.repository.SongRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class SongService {
@@ -21,5 +23,9 @@ public class SongService {
                 .build();
 
         return songRepository.save(song);
+    }
+
+    public List<Song> findAllSongs() {
+        return songRepository.findAll();
     }
 }
