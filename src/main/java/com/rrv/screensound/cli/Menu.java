@@ -4,6 +4,7 @@ import com.rrv.screensound.entity.Artist;
 import com.rrv.screensound.entity.Song;
 import com.rrv.screensound.service.ArtistService;
 import com.rrv.screensound.service.SongService;
+import com.rrv.screensound.service.WikipediaService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
@@ -18,6 +19,7 @@ import java.util.Scanner;
 public class Menu implements CommandLineRunner {
     private final ArtistService artistService;
     private final SongService songService;
+    private final WikipediaService wikipediaService;
 
     private static final Scanner SCANNER = new Scanner(System.in);
     private static final String MENU = """
@@ -52,6 +54,7 @@ public class Menu implements CommandLineRunner {
                 case 2 -> collectSongData();
                 case 3 -> listAllSongs();
                 case 4 -> listAllSongsByArtist();
+                case 5 -> getArtistDescription();
                 case 0 -> System.out.println("Encerrando a aplicação...\n");
                 default -> System.out.println("Opção inválida!");
             }
@@ -109,9 +112,9 @@ public class Menu implements CommandLineRunner {
             var name = SCANNER.nextLine();
 
             System.out.print("\nDigite o nome completo do artista desta música: ");
-            var nameArtist = SCANNER.nextLine();
+            var artistName = SCANNER.nextLine();
 
-            if (name.isBlank() || nameArtist.isBlank()) {
+            if (name.isBlank() || artistName.isBlank()) {
                 System.out.println("\nInformações inválidas!");
 
                 System.out.print("\nDeseja tentar novamente? [s/n]: ");
@@ -121,7 +124,7 @@ public class Menu implements CommandLineRunner {
             }
 
             try {
-                Song song = songService.registerSong(name, nameArtist);
+                Song song = songService.registerSong(name, artistName);
 
                 if (song.getId() != null) {
                     System.out.println("\nMúsica cadastrada com sucesso!");
@@ -168,5 +171,14 @@ public class Menu implements CommandLineRunner {
         } catch (EntityNotFoundException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    private void getArtistDescription() {
+        System.out.print("Digite o nome do artista que deseja pesquisar: ");
+        var name = SCANNER.nextLine();
+
+        String artistDescription = wikipediaService.getArtistDescription(name);
+
+        System.out.println(artistDescription);
     }
 }

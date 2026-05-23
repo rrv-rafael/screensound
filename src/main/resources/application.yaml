@@ -8,3 +8,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+external:
+  wikipedia:
+    base-url: https://pt.wikipedia.org
+    user-agent: screensound/1.0

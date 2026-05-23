@@ -14,8 +14,8 @@ public class SongService {
     private final ArtistService artistService;
     private final SongRepository songRepository;
 
-    public Song registerSong(String name, String nameArtist) {
-        Artist artist = artistService.findByName(nameArtist);
+    public Song registerSong(String name, String artistName) {
+        Artist artist = artistService.findByName(artistName);
 
         Song song = Song.builder()
                 .name(name)
@@ -29,9 +29,9 @@ public class SongService {
         return songRepository.findAll();
     }
 
-    public List<Song> findAllSongsByArtist(String nameArtist) {
-        Artist artist = artistService.findByName(nameArtist);
-        
+    public List<Song> findAllSongsByArtist(String artistName) {
+        Artist artist = artistService.findByName(artistName);
+
         return songRepository.findAllByArtist(artist);
     }
 }
