@@ -51,6 +51,7 @@ public class Menu implements CommandLineRunner {
                 case 1 -> collectArtistData();
                 case 2 -> collectSongData();
                 case 3 -> listAllSongs();
+                case 4 -> listAllSongsByArtist();
                 case 0 -> System.out.println("Encerrando a aplicação...\n");
                 default -> System.out.println("Opção inválida!");
             }
@@ -131,7 +132,7 @@ public class Menu implements CommandLineRunner {
             } catch (EntityNotFoundException e) {
                 System.out.println(e.getMessage());
 
-                System.out.print("\nDeseja cadastar uma música de outro artista? [s/n]: ");
+                System.out.print("Deseja cadastar uma música de outro artista? [s/n]: ");
                 registerAnother = SCANNER.nextLine();
             }
         } while (registerAnother.equalsIgnoreCase("s"));
@@ -147,5 +148,25 @@ public class Menu implements CommandLineRunner {
         }
 
         songs.forEach(s -> System.out.println("Música: " + s.getName() + " - Artista: " + s.getArtist().getName()));
+    }
+
+    private void listAllSongsByArtist() {
+        System.out.print("\nDigite o nome do artista para listar as músicas: ");
+        var name = SCANNER.nextLine();
+
+        try {
+            List<Song> songs = songService.findAllSongsByArtist(name);
+
+            if (songs.isEmpty()) {
+                System.out.println("\nNenhuma música encontrada para este artista!\n");
+
+                return;
+            }
+
+            System.out.printf("%nMúsicas do artista: %s%n", name);
+            songs.forEach(s -> System.out.println(s.getName()));
+        } catch (EntityNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

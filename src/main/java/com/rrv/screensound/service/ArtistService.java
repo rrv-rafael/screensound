@@ -25,6 +25,6 @@ public class ArtistService {
 
     public Artist findByName(String name) {
         return artistRepository.findArtistByNameIgnoreCase(name)
-                .orElseThrow(() -> new EntityNotFoundException("\nArtista não encontrado!"));
+                .orElseThrow(() -> new EntityNotFoundException("\nArtista não encontrado!\n"));
     }
 }

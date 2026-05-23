@@ -28,4 +28,10 @@ public class SongService {
     public List<Song> findAllSongs() {
         return songRepository.findAll();
     }
+
+    public List<Song> findAllSongsByArtist(String nameArtist) {
+        Artist artist = artistService.findByName(nameArtist);
+        
+        return songRepository.findAllByArtist(artist);
+    }
 }
